@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CRYSTALS-Dilithium · ML-DSA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- SIDEBAR -->
+    <aside class="sb">
+      <div class="sb-logo">
+        <!-- Crystal lattice logo -->
+        <svg
+          class="logo-svg"
+          viewBox="0 0 38 38"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect width="38" height="38" rx="9" fill="rgba(200,169,110,0.08)" />
+          <!-- Outer ring nodes -->
+          <circle cx="19" cy="5" r="2" fill="#C8A96E" opacity=".9" />
+          <circle cx="33" cy="12" r="2" fill="#C8A96E" opacity=".6" />
+          <circle cx="33" cy="26" r="2" fill="#C8A96E" opacity=".6" />
+          <circle cx="19" cy="33" r="2" fill="#C8A96E" opacity=".9" />
+          <circle cx="5" cy="26" r="2" fill="#C8A96E" opacity=".6" />
+          <circle cx="5" cy="12" r="2" fill="#C8A96E" opacity=".6" />
+          <!-- Inner ring -->
+          <circle cx="19" cy="12" r="1.5" fill="#E8C98A" opacity=".7" />
+          <circle cx="26" cy="19" r="1.5" fill="#E8C98A" opacity=".7" />
+          <circle cx="19" cy="26" r="1.5" fill="#E8C98A" opacity=".7" />
+          <circle cx="12" cy="19" r="1.5" fill="#E8C98A" opacity=".7" />
+          <!-- Center -->
+          <circle cx="19" cy="19" r="3" fill="#F5E0B0" />
+          <!-- Outer edges -->
+          <line
+            x1="19"
+            y1="5"
+            x2="33"
+            y2="12"
+            stroke="rgba(200,169,110,0.35)"
+            stroke-width="1"
+          />
+          <line
+            x1="33"
+            y1="12"
+            x2="33"
+            y2="26"
+            stroke="rgba(200,169,110,0.35)"
+            stroke-width="1"
+          />
+          <line
+            x1="33"
+            y1="26"
+            x2="19"
+            y2="33"
+            stroke="rgba(200,169,110,0.35)"
+            stroke-width="1"
+          />
+          <line
+            x1="19"
+            y1="33"
+            x2="5"
+            y2="26"
+            stroke="rgba(200,169,110,0.35)"
+            stroke-width="1"
+          />
+          <line
+            x1="5"
+            y1="26"
+            x2="5"
+            y2="12"
+            stroke="rgba(200,169,110,0.35)"
+            stroke-width="1"
+          />
+          <line
+            x1="5"
+            y1="12"
+            x2="19"
+            y2="5"
+            stroke="rgba(200,169,110,0.35)"
+            stroke-width="1"
+          />
+          <!-- Spokes to center -->
+          <line
+            x1="19"
+            y1="5"
+            x2="19"
+            y2="19"
+            stroke="rgba(245,224,176,0.3)"
+            stroke-width=".8"
+            stroke-dasharray="2 2"
+          />
+          <line
+            x1="33"
+            y1="12"
+            x2="19"
+            y2="19"
+            stroke="rgba(245,224,176,0.3)"
+            stroke-width=".8"
+            stroke-dasharray="2 2"
+          />
+          <line
+            x1="33"
+            y1="26"
+            x2="19"
+            y2="19"
+            stroke="rgba(245,224,176,0.3)"
+            stroke-width=".8"
+            stroke-dasharray="2 2"
+          />
+          <line
+            x1="19"
+            y1="33"
+            x2="19"
+            y2="19"
+            stroke="rgba(245,224,176,0.3)"
+            stroke-width=".8"
+            stroke-dasharray="2 2"
+          />
+          <line
+            x1="5"
+            y1="26"
+            x2="19"
+            y2="19"
+            stroke="rgba(245,224,176,0.3)"
+            stroke-width=".8"
+            stroke-dasharray="2 2"
+          />
+          <line
+            x1="5"
+            y1="12"
+            x2="19"
+            y2="19"
+            stroke="rgba(245,224,176,0.3)"
+            stroke-width=".8"
+            stroke-dasharray="2 2"
+          />
+          <!-- Inner ring connections -->
+          <line
+            x1="19"
+            y1="12"
+            x2="26"
+            y2="19"
+            stroke="rgba(232,201,138,0.4)"
+            stroke-width=".8"
+          />
+          <line
+            x1="26"
+            y1="19"
+            x2="19"
+            y2="26"
+            stroke="rgba(232,201,138,0.4)"
+            stroke-width=".8"
+          />
+          <line
+            x1="19"
+            y1="26"
+            x2="12"
+            y2="19"
+            stroke="rgba(232,201,138,0.4)"
+            stroke-width=".8"
+          />
+          <line
+            x1="12"
+            y1="19"
+            x2="19"
+            y2="12"
+            stroke="rgba(232,201,138,0.4)"
+            stroke-width=".8"
+          />
+        </svg>
+        <div>
+          <div class="logo-wordmark">Di<em>li</em>thium</div>
+          <div class="logo-tagline">FIPS 204 · ML-DSA</div>
+        </div>
+      </div>
+
+      <div class="sb-label">Security Level</div>
+      <div class="lv-wrap">
+        <button class="lv on" onclick="setLevel(2)">
+          Dilithium2 <span class="lv-tag">NIST-2</span>
+        </button>
+        <button class="lv" onclick="setLevel(3)">
+          Dilithium3 <span class="lv-tag">NIST-3</span>
+        </button>
+        <button class="lv" onclick="setLevel(5)">
+          Dilithium5 <span class="lv-tag">NIST-5</span>
+        </button>
+      </div>
+
+      <div class="sb-label">Parameters</div>
+      <div class="pm-wrap">
+        <div class="pm-card">
+          <div class="pm-head">Lattice Dimensions</div>
+          <div class="pm-row">
+            <span class="pm-k">k × l</span
+            ><span class="pm-v" id="pm-kl">4 × 4</span>
+          </div>
+          <div class="pm-row">
+            <span class="pm-k">η (eta)</span
+            ><span class="pm-v" id="pm-eta">2</span>
+          </div>
+          <div class="pm-row">
+            <span class="pm-k">τ (tau)</span
+            ><span class="pm-v" id="pm-tau">39</span>
+          </div>
+        </div>
+        <div class="pm-card">
+          <div class="pm-head">Bound Constants</div>
+          <div class="pm-row">
+            <span class="pm-k">γ₁</span><span class="pm-v" id="pm-g1">2¹⁷</span>
+          </div>
+          <div class="pm-row">
+            <span class="pm-k">γ₂</span
+            ><span class="pm-v" id="pm-g2">95,232</span>
+          </div>
+          <div class="pm-row">
+            <span class="pm-k">ω</span><span class="pm-v" id="pm-om">80</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sb-label">Workflow</div>
+      <div class="nav-wrap">
+        <div class="nav-i on" id="nav1">
+          <div class="nav-n" id="nn1">1</div>
+          Generate Keys
+        </div>
+        <div class="nav-i" id="nav2">
+          <div class="nav-n" id="nn2">2</div>
+          Write Message
+        </div>
+        <div class="nav-i" id="nav3">
+          <div class="nav-n" id="nn3">3</div>
+          Sign
+        </div>
+        <div class="nav-i" id="nav4">
+          <div class="nav-n" id="nn4">4</div>
+          Verify
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+      <header class="top">
+        <div class="top-title">CRYSTALS-<em>Dilithium</em></div>
+        <div class="top-div"></div>
+        <div class="top-chip" id="top-chip">Dilithium2 · Module-LWE</div>
+        <div class="steps">
+          <div class="sp on" id="step1">
+            <div class="sp-dot"></div>
+            Keys
+          </div>
+          <div class="sp" id="step2">
+            <div class="sp-dot"></div>
+            Message
+          </div>
+          <div class="sp" id="step3">
+            <div class="sp-dot"></div>
+            Sign
+          </div>
+          <div class="sp" id="step4">
+            <div class="sp-dot"></div>
+            Verify
+          </div>
+        </div>
+      </header>
+
+      <div class="scroll">
+        <!-- stat strip -->
+        <div class="stats">
+          <div class="st" style="animation-delay: 0.04s">
+            <div class="st-l">Variant</div>
+            <div class="st-v" id="statVariant">Dilithium2</div>
+          </div>
+          <div class="st" style="animation-delay: 0.08s">
+            <div class="st-l">Public Key</div>
+            <div class="st-v" id="statPk">1,312 B</div>
+          </div>
+          <div class="st" style="animation-delay: 0.12s">
+            <div class="st-l">Private Key</div>
+            <div class="st-v" id="statSk">2,528 B</div>
+          </div>
+          <div class="st" style="animation-delay: 0.16s">
+            <div class="st-l">Signature</div>
+            <div class="st-v" id="statSig">2,420 B</div>
+          </div>
+          <div class="st" style="animation-delay: 0.2s">
+            <div class="st-l">Hardness</div>
+            <div class="st-v">M-LWE</div>
+          </div>
+          <div class="st" style="animation-delay: 0.24s">
+            <div class="st-l">Standard</div>
+            <div class="st-v">FIPS 204</div>
+          </div>
+        </div>
+
+        <div class="g2">
+          <!-- KEY GEN -->
+          <div class="card glow" id="card-keys" style="animation-delay: 0.1s">
+            <div class="ch">
+              <div class="ch-ico chi-g">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="#C8A96E"
+                  stroke-width="1.8"
+                >
+                  <circle cx="6" cy="10" r="4" />
+                  <path d="M10 6l2-2 1 1-2 2M12.5 1.5l2 2" />
+                </svg>
+              </div>
+              <span class="ch-t">Key Generation</span>
+              <div class="ch-r">
+                <button
+                  class="cpbtn"
+                  onclick="copyText(state.pkHex, 'Public key')"
+                >
+                  copy pk
+                </button>
+              </div>
+            </div>
+            <div class="cb">
+              <div class="fi">
+                <div class="fi-l">
+                  Public Key <span class="fi-sub">ρ + t₁</span
+                  ><span class="fi-r" id="pkSize">—</span>
+                </div>
+                <div class="mbox" id="pkDisplay">Awaiting generation…</div>
+              </div>
+              <div class="fi">
+                <div class="fi-l">
+                  Private Key <span class="fi-sub">ρ, K, tr, s₁, s₂, t₀</span
+                  ><span class="fi-r" id="skSize">—</span>
+                </div>
+                <div class="mbox" id="skDisplay">Awaiting generation…</div>
+              </div>
+              <div class="fi">
+                <div class="fi-l">Secret polynomial s₁[0]</div>
+                <div class="pwrap"><canvas id="pc"></canvas></div>
+              </div>
+              <div class="br">
+                <button
+                  class="btn btn-p"
+                  id="keygenBtn"
+                  onclick="generateKeys()"
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  >
+                    <circle cx="6" cy="10" r="4" />
+                    <path d="M10 6l2-2 1 1-2 2M12.5 1.5l2 2" />
+                  </svg>
+                  Generate Keys
+                </button>
+                <button class="btn btn-s" onclick="clearAll()">Reset</button>
+              </div>
+              <div
+                style="margin-top: 10px; font-size: 10.5px; color: var(--txt3)"
+              >
+                Keygen:
+                <span
+                  style="
+                    color: var(--gold);
+                    font-family: &quot;JetBrains Mono&quot;, monospace;
+                  "
+                  id="keygenTime"
+                  >—</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- SIGN -->
+          <div class="card" id="card-sign" style="animation-delay: 0.14s">
+            <div class="ch">
+              <div class="ch-ico chi-g">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="#C8A96E"
+                  stroke-width="1.8"
+                >
+                  <path d="M11 3l2 2-7 7-3 1 1-3z" />
+                </svg>
+              </div>
+              <span class="ch-t">Sign Message</span>
+              <div class="ch-r">
+                <button
+                  class="cpbtn"
+                  onclick="copyText(state.sigHex, 'Signature')"
+                >
+                  copy σ
+                </button>
+              </div>
+            </div>
+            <div class="cb">
+              <div class="fi">
+                <div class="fi-l">Message</div>
+                <textarea
+                  class="ta"
+                  id="messageInput"
+                  placeholder="Enter a message to sign…"
+                >
+The quick brown fox jumps over the lazy dog. Protected by post-quantum cryptography.</textarea
+                >
+              </div>
+              <div class="fi">
+                <div class="fi-l">SHA-256 digest</div>
+                <div class="hpill" id="msgHash">—</div>
+              </div>
+              <div class="fi">
+                <div class="fi-l">
+                  Signature σ<span class="fi-r" id="sigSize">—</span>
+                </div>
+                <div class="mbox" id="sigDisplay">
+                  Sign a message to generate…
+                </div>
+              </div>
+              <div class="br">
+                <button
+                  class="btn btn-p"
+                  id="signBtn"
+                  onclick="signMessage()"
+                  disabled
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  >
+                    <path d="M11 3l2 2-7 7-3 1 1-3z" />
+                  </svg>
+                  Sign Message
+                </button>
+                <button class="btn btn-s" onclick="loadSampleMsg()">
+                  Sample
+                </button>
+              </div>
+              <div
+                style="
+                  margin-top: 10px;
+                  display: flex;
+                  gap: 18px;
+                  font-size: 10.5px;
+                  color: var(--txt3);
+                "
+              >
+                <span
+                  >Time:
+                  <span
+                    style="
+                      color: var(--gold);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                    "
+                    id="signTime"
+                    >—</span
+                  ></span
+                >
+                <span
+                  >Iterations:
+                  <span
+                    style="
+                      color: var(--gold);
+                      font-family: &quot;JetBrains Mono&quot;, monospace;
+                    "
+                    id="rejIter"
+                    >—</span
+                  ></span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- VERIFY full width -->
+          <div
+            class="card full"
+            id="card-verify"
+            style="animation-delay: 0.18s"
+          >
+            <div class="ch">
+              <div class="ch-ico chi-j">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="#3ECFA0"
+                  stroke-width="2"
+                >
+                  <path d="M2.5 8.5l3.5 3.5 7-7" />
+                </svg>
+              </div>
+              <span class="ch-t">Verify Signature</span>
+            </div>
+            <div class="cb tight">
+              <div class="g2" style="gap: 14px">
+                <div class="fi">
+                  <div class="fi-l">Message to verify</div>
+                  <textarea
+                    class="ta"
+                    id="verifyMessage"
+                    placeholder="Auto-filled after signing…"
+                  ></textarea>
+                  <div class="br" style="margin-top: 8px">
+                    <button class="btn btn-s" onclick="useSignedMessage()">
+                      Use signed
+                    </button>
+                    <button class="btn btn-d" onclick="tamperMessage()">
+                      ⚡ Tamper
+                    </button>
+                  </div>
+                </div>
+                <div class="fi">
+                  <div class="fi-l">Signature hex</div>
+                  <textarea
+                    class="ta mono"
+                    id="verifySignature"
+                    placeholder="Auto-filled after signing…"
+                  ></textarea>
+                  <div class="br" style="margin-top: 8px">
+                    <button class="btn btn-s" onclick="useGeneratedSig()">
+                      Use generated
+                    </button>
+                    <button class="btn btn-d" onclick="tamperSignature()">
+                      ⚡ Tamper
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="br" style="margin-top: 15px">
+                <button
+                  class="btn btn-p"
+                  id="verifyBtn"
+                  onclick="verifySignature()"
+                  disabled
+                >
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.4"
+                  >
+                    <path d="M2.5 8.5l3.5 3.5 7-7" />
+                  </svg>
+                  Verify Signature
+                </button>
+              </div>
+              <div class="vr" id="verifyResult">
+                <div class="vr-ico" id="vrIcon"></div>
+                <div>
+                  <div class="vr-t" id="vrTitle"></div>
+                  <div class="vr-d" id="vrDesc"></div>
+                </div>
+              </div>
+              <div class="tg">
+                <div class="tc">
+                  <div class="tl">Key Generation</div>
+                  <div class="tv" id="t_keygen">—</div>
+                </div>
+                <div class="tc">
+                  <div class="tl">Signing</div>
+                  <div class="tv" id="t_sign">—</div>
+                </div>
+                <div class="tc">
+                  <div class="tl">Verification</div>
+                  <div class="tv" id="t_verify">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- info -->
+        <div class="irow">
+          <div class="ic" style="animation-delay: 0.26s">
+            <div class="ic-h">
+              <div class="ic-ico">⚛</div>
+              <div class="ic-t">Module Lattice</div>
+            </div>
+            <div class="ic-b">
+              Operates over R_q = Z_q[X]/(X²⁵⁶+1) with q = 8,380,417. Security
+              reduces to Module-LWE and Module-SIS problems, believed resistant
+              to quantum computers.
+            </div>
+          </div>
+          <div class="ic" style="animation-delay: 0.32s">
+            <div class="ic-h">
+              <div class="ic-ico">🔄</div>
+              <div class="ic-t">Rejection Sampling</div>
+            </div>
+            <div class="ic-b">
+              Signer samples mask y, computes w = Ay, checks if z = y + cs₁
+              leaks the secret. Aborts and retries when infinity norm exceeds
+              bound γ₁ − β.
+            </div>
+          </div>
+          <div class="ic" style="animation-delay: 0.38s">
+            <div class="ic-h">
+              <div class="ic-ico">⚡</div>
+              <div class="ic-t">NTT Acceleration</div>
+            </div>
+            <div class="ic-b">
+              Polynomial multiplication uses the Number Theoretic Transform in
+              O(n log n) over Z_q. Precomputed ζ-tables enable fast convolutions
+              over degree-256 rings.
+            </div>
+          </div>
+          <div class="ic" style="animation-delay: 0.44s">
+            <div class="ic-h">
+              <div class="ic-ico">📋</div>
+              <div class="ic-t">NIST FIPS 204</div>
+            </div>
+            <div class="ic-b">
+              Standardized in 2024 as ML-DSA. Dilithium3 targets ~128-bit
+              post-quantum security, designed as the primary replacement for
+              ECDSA and RSA.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="toasts"></div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
