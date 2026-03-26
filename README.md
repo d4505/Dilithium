@@ -114,10 +114,10 @@ Click "Generate Keys" to create a new keypair. The process:
 
 | Browser | Status |
 |---------|--------|
-| Chrome 90+ | ✅ Fully supported |
-| Firefox 88+ | ✅ Fully supported |
-| Safari 14+ | ✅ Fully supported |
-| Edge 90+ | ✅ Fully supported |
+| Chrome 90+ | Fully supported |
+| Firefox 88+ | Fully supported |
+| Safari 14+ | Fully supported |
+| Edge 90+ | Fully supported |
 
 **Requirements**: WebCrypto API, Uint8Array, Promise support
 
@@ -141,7 +141,7 @@ Typical performance on modern hardware (varies by device):
 
 ## Security Notes
 
-⚠️ **Important**: This is an educational implementation. For production use:
+**Important**: This is an educational implementation. For production use:
 
 1. Use established cryptographic libraries (libdilithium, liboqs, etc.)
 2. Conduct security audits and formal verification
@@ -171,3 +171,30 @@ This project is provided as-is for educational purposes.
 **Status**: Active Development
 
 For questions or improvements, contribute to the project or open an issue.
+
+## Under the Hood: How the Simulation Works (In-Depth)
+
+While this project is an educational sandbox that accurately represents Dilithium's properties, **it acts as a deterministic simulation rather than a complete raw lattice mathematics implementation**. To make this fast, lightweight, and feasible in a browser without heavy WASM dependencies, the simulation intelligently wraps standard web cryptography.
+
+Here is exactly how the simulation models the Post-Quantum realities of ML-DSA using standard algorithms:
+
+### 1. Underlying Cryptography and XOF (Extendable-Output Function)
+To ensure the signatures are mathematically bound to the keys and offer genuine file integrity verification, the core engine relies on **ECDSA (Curve P-384)** with **SHA-384** via the native `crypto.subtle` Web Crypto API.
+It marries this with an iterative hashing function (`expandToSize` using SHA-256) acting as an XOF. This function expands standard ECDSA elements into the exact, massive byte-arrays demanded by ML-DSA.
+
+### 2. Simulating Key Generation (`dilithiumKeyGen`)
+Lattice keys are enormous (e.g., 2,528 bytes for a Dilithium2 private key).
+* **Generation & Padding:** The engine generates an ECDSA keypair. The exported public and private materials are stretched using the `expandToSize` XOF until they perfectly match the exact byte size of the chosen NIST parameter tier (defined in the `PARAMS` object).
+* **Lattice Simulation (`rho` and `s1vis`):** In true Dilithium, public keys contain a random seed $\rho$, and secret vectors $\mathbf{s}_1$ and $\mathbf{s}_2$. The app takes the first 32 bytes of the expanded public key to simulate $\rho$. It uses a deterministic linear congruential generator (`makeSmallPoly`) bounded by the $\eta$ parameter (either 2 or 4) to generate 256 coefficients. This data is what drives the mathematical visualizer on the frontend to represent the secret error vector $\mathbf{s}_1$.
+
+### 3. Simulating Rejection Sampling in Signing (`dilithiumSign`)
+One of the most defining characteristics of Dilithium is its "rejection sampling". During signing, if the output leaks too much information about the secret key (falling outside a strict bound defined by parameters like $\beta$ and $\gamma$), the algorithm throws it away and restarts.
+* The script accurately calculates the theoretical failure probability leveraging Dilithium constants ($k$, $\beta$, $\gamma_1$, $\gamma_2$). 
+* The mathematical formula `Math.round(1 / (Math.exp(...) * Math.exp(...)))` approximates how many attempts a real ML-DSA signer would expect to need before finding a safe signature.
+* This calculated index (with injected realistic variance) provides an accurate simulation of PQC computational characteristics.
+* **Signature Expansion:** The valid ECDSA signature is expanded to the enormous size of a Dilithium signature (e.g., 2,420 bytes). The engine smartly embeds the true signature and its length as metadata into the trailing bytes of the expanded buffer, allowing it to be recovered later without ruining the byte footprint.
+
+### 4. Simulating Verification (`dilithiumVerify`)
+* **Integrity Validation:** The script first ensures that the received signature strictly matches the expected byte-length according to the ML-DSA parameters.
+* **Extraction:** The embedded byte markers at the end of the payload are parsed (e.g., `sigBytes[p.sigBytes - 2]`), identifying the exact segment of the true ECDSA payload.
+* **Verification:** The separated ECDSA signature and the inputted message are run through the browser's cryptographic verifier natively. This ensures any tampering with the message or the signature accurately results in cryptographic failure, perfectly mirroring the operational output of a true PQC verifier.

@@ -390,7 +390,9 @@ async function verifySignature() {
 function showResult(valid, desc) {
   const el = document.getElementById("verifyResult");
   el.className = "vr " + (valid ? "ok" : "no") + " show";
-  document.getElementById("vrIcon").textContent = valid ? "✅" : "❌";
+  document.getElementById("vrIcon").innerHTML = valid 
+    ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ECFA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>'
+    : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#E66767" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
   document.getElementById("vrTitle").textContent = valid
     ? "Signature Valid"
     : "Invalid Signature";
@@ -408,7 +410,7 @@ function tamperMessage() {
   const ta = document.getElementById("verifyMessage");
   if (!ta.value) useSignedMessage();
   const a = ta.value.split("");
-  a[Math.floor(Math.random() * a.length)] = "⚡";
+  a[Math.floor(Math.random() * a.length)] = "X";
   ta.value = a.join("");
   toast("Message tampered", "error");
 }
